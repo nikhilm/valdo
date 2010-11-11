@@ -65,15 +65,14 @@ Backbone.sync = function(method, model, success, error) {
               url: window.openkeyvalUrl + prefix + 'todos'
             , success: function(data) {
                 keys = JSON.parse(data);
-                _.each(keys, function(id, index) {
+                _.each(keys, function(id) {
                     $.ajax(_.extend(settings, {
                         url: window.openkeyvalUrl + prefix + id + '.application/json'
                       , success: function(data) { models.push(JSON.parse(data)); }
                       , complete: function() {
                           // all done
-                          if( index == keys.length-1 ) {
+                          if( keys.length == models.length )
                               success(models);
-                          }
                         }
                     }));
                 });
