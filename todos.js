@@ -19,14 +19,13 @@ return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 
 Backbone.sync = function(method, model, success, error) {
   var sendModel = method === 'create' || method === 'update';
-  var modelData = sendModel ? JSON.stringify(model) : null;
   var type = 'GET';
 
+  console.log(method, model);
   var prefix = $('#username').val() + '-';
 
   var settings = {
       dataType: "jsonp"
-      , data: modelData
       , type: type
       , success: success //function() { console.log(arguments); success(arguments[0]); }
       , error: error
@@ -46,6 +45,14 @@ Backbone.sync = function(method, model, success, error) {
           }));
       }
       else {
+          if( method === 'delete' ) {
+              idList = _.without(idList, model.id);
+              console.log(idList);
+              $.ajax(_.extend(settings, {
+                  url: window.openkeyvalUrl + 'store/'
+                , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '='
+              }));
+          }
       }
   }
   else {
