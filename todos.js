@@ -8,6 +8,15 @@
 window.openkeyvalUrl = 'http://api.openkeyval.org/';
 Backbone.emulateHttp = true;
 
+function S4() {
+return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+};
+
+// Generate a pseudo-GUID by concatenating random hexadecimal.
+function guid() {
+return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+};
+
 Backbone.sync = function(method, model, success, error) {
   var sendModel = method === 'create' || method === 'update';
   var modelData = sendModel ? JSON.stringify(model) : null;
@@ -23,18 +32,17 @@ Backbone.sync = function(method, model, success, error) {
       , error: error
   };
 
-  if( model.id ) {
-      var keyname = prefix + model.id;
-      console.log(keyname);
+  if( !model.pluck ) {
+      var idList = model.collection.pluck('id');
       if( sendModel ) {
-          var idList = _.pluck(model.collection.models, 'id');
-          idList.push( model.id );
-          console.log(idList);
-          console.log("making request ", window.openkeyvalUrl, JSON.stringify(idList), modelData);
-
+          if( !model.id )
+              model.set({"id" : 'sharedo-' + guid()});
+          // if created, then the collection doesn't have it yet
+          if( method === 'create' )
+              idList.push( model.id );
           $.ajax(_.extend(settings, {
               url: window.openkeyvalUrl + 'store/'
-            , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '=' + modelData
+            , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '=' + JSON.stringify(model)
           }));
       }
       else {
@@ -70,14 +78,6 @@ Backbone.sync = function(method, model, success, error) {
 }
 
 $(function(){
-  function S4() {
-    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-  };
-
-  // Generate a pseudo-GUID by concatenating random hexadecimal.
-  function guid() {
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-  };
 
 
   // Todo Model
@@ -94,8 +94,6 @@ $(function(){
       if (!this.get("content")) {
         this.set({"content": this.EMPTY});
       }
-      if( !this.id )
-          this.set({"id" : 'sharedo-' + guid()});
     },
 
     // Toggle the `done` state of this todo item.
