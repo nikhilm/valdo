@@ -34,14 +34,14 @@ Backbone.sync = function(method, model, success, error) {
       var idList = model.collection.pluck('id');
       if( sendModel ) {
           if( !model.id )
-              model.set({"id" : 'sharedo-' + guid()});
+              model.set({"id" : 'valdo-' + guid()});
           // if created, then the collection doesn't have it yet
           if( method === 'create' )
               idList.push( model.id );
 
           $.ajax(_.extend(settings, {
               url: window.openkeyvalUrl + 'store/'
-            , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '=' + JSON.stringify(model)
+            , data: prefix + 'valdos=' + JSON.stringify(idList) + '&' + prefix + model.id + '=' + JSON.stringify(model)
           }));
       }
       else {
@@ -49,7 +49,7 @@ Backbone.sync = function(method, model, success, error) {
               idList = _.without(idList, model.id);
               $.ajax(_.extend(settings, {
                   url: window.openkeyvalUrl + 'store/'
-                , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '='
+                , data: prefix + 'valdos=' + JSON.stringify(idList) + '&' + prefix + model.id + '='
               }));
           }
       }
@@ -62,7 +62,7 @@ Backbone.sync = function(method, model, success, error) {
           var models = [];
           // fetch the key which has list of todos
           $.ajax(_.extend(settings, {
-              url: window.openkeyvalUrl + prefix + 'todos'
+              url: window.openkeyvalUrl + prefix + 'valdos'
             , success: function(data) {
                 keys = JSON.parse(data);
                 _.each(keys, function(id) {
@@ -316,7 +316,7 @@ $(function(){
       if (e.keyCode != 13) return;
       var self = this;
       this.username.hide(1000, function() {
-          $('.title h1').text("Sharedo (" + self.username.val() + ")");
+          $('.title h1').text("Valdo (" + self.username.val() + ")");
           self.input.show(1000);
       });
       Todos.fetch();
