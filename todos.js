@@ -21,7 +21,6 @@ Backbone.sync = function(method, model, success, error) {
   var sendModel = method === 'create' || method === 'update';
   var type = 'GET';
 
-  console.log(method, model);
   var prefix = $('#username').val() + '-';
 
   var settings = {
@@ -39,6 +38,7 @@ Backbone.sync = function(method, model, success, error) {
           // if created, then the collection doesn't have it yet
           if( method === 'create' )
               idList.push( model.id );
+
           $.ajax(_.extend(settings, {
               url: window.openkeyvalUrl + 'store/'
             , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '=' + JSON.stringify(model)
@@ -47,7 +47,6 @@ Backbone.sync = function(method, model, success, error) {
       else {
           if( method === 'delete' ) {
               idList = _.without(idList, model.id);
-              console.log(idList);
               $.ajax(_.extend(settings, {
                   url: window.openkeyvalUrl + 'store/'
                 , data: prefix + 'todos=' + JSON.stringify(idList) + '&' + prefix + model.id + '='
