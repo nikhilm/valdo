@@ -68,7 +68,13 @@ Backbone.sync = function(method, model, success, error) {
                 _.each(keys, function(id) {
                     $.ajax(_.extend(settings, {
                         url: window.openkeyvalUrl + prefix + id + '.application/json'
-                      , success: function(data) { models.push(JSON.parse(data)); }
+                      , success: function(data) {
+                          var obj = JSON.parse(data);
+                          // remove certain openkeyval attributes
+                          delete obj.status;
+                          delete obj.keys;
+                          models.push(obj);
+                        }
                       , complete: function() {
                           // all done
                           if( keys.length == models.length )
